@@ -267,7 +267,7 @@ public class JingleConnectionManager extends AbstractConnectionManager {
         }
         final boolean fromSelf = from.asBareJid().equals(account.getJid().asBareJid());
         // XEP version 0.6.0 sends proceed, reject, ringing to bare jid
-        final boolean addressedDirectly = to != null && to.equals(account.getJid());
+        final boolean isIncoming = to != null && to.asBareJid().equals(account.getJid().asBareJid());
         final AbstractJingleConnection.Id id;
         if (fromSelf) {
             if (to != null && to.isFullJid()) {
@@ -422,7 +422,7 @@ public class JingleConnectionManager extends AbstractConnectionManager {
                                 + descriptions.size()
                                 + " total descriptions");
             }
-        } else if (addressedDirectly && "proceed".equals(message.getName())) {
+        } else if (isIncoming && "proceed".equals(message.getName())) {
             synchronized (rtpSessionProposals) {
                 final RtpSessionProposal proposal =
                         getRtpSessionProposal(account, from.asBareJid(), sessionId);
@@ -455,7 +455,7 @@ public class JingleConnectionManager extends AbstractConnectionManager {
                     mXmppConnectionService.sendMessagePacket(account, errorMessage);
                 }
             }
-        } else if (addressedDirectly && "reject".equals(message.getName())) {
+        } else if (isIncoming && "reject".equals(message.getName())) {
             final RtpSessionProposal proposal =
                     getRtpSessionProposal(account, from.asBareJid(), sessionId);
             synchronized (rtpSessionProposals) {
@@ -477,7 +477,7 @@ public class JingleConnectionManager extends AbstractConnectionManager {
                                     + " to deliver reject");
                 }
             }
-        } else if (addressedDirectly && "ringing".equals(message.getName())) {
+        } else if (isIncoming && "ringing".equals(message.getName())) {
             Log.d(Config.LOGTAG, account.getJid().asBareJid() + ": " + from + " started ringing");
             updateProposedSessionDiscovered(
                     account, from, sessionId, DeviceDiscoveryState.DISCOVERED);
@@ -488,8 +488,8 @@ public class JingleConnectionManager extends AbstractConnectionManager {
                             + ": retrieved out of order jingle message from "
                             + from
                             + message
-                            + ", addressedDirectly="
-                            + addressedDirectly);
+                            + ", isIncoming="
+                            + isIncoming);
         }
     }
 

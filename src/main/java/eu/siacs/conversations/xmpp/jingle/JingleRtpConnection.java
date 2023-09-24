@@ -1405,7 +1405,7 @@ public class JingleRtpConnection extends AbstractJingleConnection
         if (originatedFromMyself) {
             receiveRejectFromMyself(serverMsgId, timestamp);
         } else if (isInitiator()) {
-            if (from.equals(id.with)) {
+            if (from.asBareJid().equals(id.with.asBareJid())) {
                 receiveRejectFromResponder();
             } else {
                 Log.d(
@@ -1555,7 +1555,7 @@ public class JingleRtpConnection extends AbstractJingleConnection
                 Preconditions.checkNotNull(
                         this.proposedMedia, "Proposed media has to be set before handling proceed");
         Preconditions.checkState(media.size() > 0, "Proposed media should not be empty");
-        if (from.equals(id.with)) {
+        if (from.asBareJid().equals(id.with.asBareJid())) {
             if (isInitiator()) {
                 if (transition(State.PROCEED)) {
                     if (serverMsgId != null) {
@@ -1609,7 +1609,7 @@ public class JingleRtpConnection extends AbstractJingleConnection
     }
 
     private void receiveRetract(final Jid from, final String serverMsgId, final long timestamp) {
-        if (from.equals(id.with)) {
+        if (from.asBareJid().equals(id.with.asBareJid())) {
             final State target =
                     this.state == State.PROCEED ? State.RETRACTED_RACED : State.RETRACTED;
             if (transition(target)) {
